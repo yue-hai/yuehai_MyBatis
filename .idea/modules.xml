@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/01_HelloWorld/01_HelloWorld.iml" filepath="$PROJECT_DIR$/01_HelloWorld/01_HelloWorld.iml" />
+      <module fileurl="file://$PROJECT_DIR$/02_HelloWorld_接口式编程/02_HelloWorld_接口式编程.iml" filepath="$PROJECT_DIR$/02_HelloWorld_接口式编程/02_HelloWorld_接口式编程.iml" />
+      <module fileurl="file://$PROJECT_DIR$/03_config/03_config.iml" filepath="$PROJECT_DIR$/03_config/03_config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/04_mapper/04_mapper.iml" filepath="$PROJECT_DIR$/04_mapper/04_mapper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/05_DynamicSQL/05_DynamicSQL.iml" filepath="$PROJECT_DIR$/05_DynamicSQL/05_DynamicSQL.iml" />
+      <module fileurl="file://$PROJECT_DIR$/06_cache/06_cache.iml" filepath="$PROJECT_DIR$/06_cache/06_cache.iml" />
+      <module fileurl="file://$PROJECT_DIR$/07_ehcache/07_ehcache.iml" filepath="$PROJECT_DIR$/07_ehcache/07_ehcache.iml" />
+      <module fileurl="file://$PROJECT_DIR$/08_mybatis_spring/08_mybatis_spring.iml" filepath="$PROJECT_DIR$/08_mybatis_spring/08_mybatis_spring.iml" />
+      <module fileurl="file://$PROJECT_DIR$/09_MyBatis.iml" filepath="$PROJECT_DIR$/09_MyBatis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/09_MyBatisGenerator/09_MyBatisGenerator.iml" filepath="$PROJECT_DIR$/09_MyBatisGenerator/09_MyBatisGenerator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/10_source/10_source.iml" filepath="$PROJECT_DIR$/10_source/10_source.iml" />
+      <module fileurl="file://$PROJECT_DIR$/11_plugin/11_plugin.iml" filepath="$PROJECT_DIR$/11_plugin/11_plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/12_other/12_other.iml" filepath="$PROJECT_DIR$/12_other/12_other.iml" />
+    </modules>
+  </component>
+</project>

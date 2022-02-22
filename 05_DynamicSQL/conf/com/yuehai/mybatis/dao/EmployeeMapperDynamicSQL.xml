@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- sql 映射文件 -->
+<!-- namespace：名称空间，指定为 dao 接口的全类名 -->
+<mapper namespace="com.yuehai.mybatis.dao.EmployeeMapperDynamicSQL">
+
+    <!--
+        动态SQL
+            if：判断语句
+            trim (where, set)：字符串截取
+                where：封装查询条件
+                set：封装修改条件
+            choose (when, otherwise)：分支选择（swtih-case）
+                如果参数带了 id 就用 id 查，带了 lastName 就用 lastName 查
+                只会进入其中一个
+                when：when 中的语句只会进入其中一个，从上到下判断进入，类似 case
+                otherwise：如果 when 都没有执行，则会进入 otherwise 标签，类似 default
+            foreach：循环
+                collection：指定要遍历的集合
+                item：将遍历出的元素赋值给指定的变量，当前遍历的值
+                separator：每个元素之间的分隔符，MyBatis 会自动语句添加上
+                open：前缀，遍历出所有结果后拼接一个开始的字符
+                close：后缀，遍历出所有结果后拼接一个结束的字符
+                index：遍历 list 集合的时候 index 是索引，item 是当前值
+                       遍历 map 集合的时候表示是 map 集合的 key，item 是 map 的值
+     -->
+
+<!--    &lt;!&ndash; 携带了哪个字段查询条件就带上这个字段的值，练习 if &ndash;&gt;-->
+<!--    <select id="getEmpsByConditionIf" resultType="com.yuehai.mybatis.bean.Employee">-->
+<!--        SELECT * FROM tbl_employee-->
+<!--        &lt;!&ndash;-->
+<!--            if：判断语句；test：判断表达式（OGNL）；类似 jsp 中的 JSTL 表达式-->
+<!--                从参数中取值进行判断-->
+<!--                遇见特殊符号应该写转义字符-->
+<!--            遇到的问题：查询的时候如果某些条件没带可能导致 sql 拼装有问题，解决：-->
+<!--                1、在 WHERE 后面加上：1 = 1，后面的条件语句都加上：and xxx-->
+<!--                2、MyBatis 使用 where 标签将所有的查询条件包括在内，-->
+<!--                   会将 where 标签中拼装的 sql 多出来的 and 或者 or 去掉-->
+<!--                   where 只会去掉第一个前面多出来的 and 或者 or-->
+<!--         &ndash;&gt;-->
+<!--        <where>-->
+<!--            <if test="id != null">id=#{id}</if>-->
+<!--            &lt;!&ndash; and：和（与），也可以写为：&&，但是需要转义，所以要写成：&amp;&amp; &ndash;&gt;-->
+<!--            &lt;!&ndash; ''：在 MyBatis 中，表达式的空字符串可以写成单引号，或转义字符：&apos;&apos; &ndash;&gt;-->
+<!--            <if test="lastName != null and lastName != '' ">and last_name like #{lastName}</if>-->
+<!--            &lt;!&ndash; or：或 &ndash;&gt;-->
+<!--            <if test="gender == 0 or gender == 1">and gender = #{gender}</if>-->
+<!--            <if test="email != null and email.trim() != '' ">and email = #{email}</if>-->
+<!--        </where>-->
+<!--    </select>-->
+
+    <!-- 携带了哪个字段查询条件就带上这个字段的值，练习 trim -->
+    <select id="getEmpsByConditionTrim" resultType="com.yuehai.mybatis.bean.Employee">
+        SELECT * FROM tbl_employee
+        <!--
+            trim：字符串截取，trim 标签体中最后使用的字符串是整个字符串拼接后的结果
+            where 只能解决拼接的 sql 语句中前面多出来的 and 或 or，不能解决后面多出来的
+                prefix：前缀，给拼接后的整个字符串加一个前缀
+                prefixOverrides：前缀覆盖，去掉拼接后的整个字符串前面多余的字符
+                suffix：后缀，给拼接后的整个字符串加一个后缀
+                suffixOverrides：后缀覆盖，去掉拼接后的整个字符串后面多余的字符
+         -->
+        <trim prefix="where" prefixOverrides="and">
+            <if test="id != null">and id=#{id}</if>
+            <!-- and：和（与），也可以写为：&&，但是需要转义，所以要写成：&amp;&amp; -->
+            <!-- ''：在 MyBatis 中，表达式的空字符串可以写成单引号，或转义字符：&apos;&apos; -->
+            <if test="lastName != null and lastName != '' ">and last_name like #{lastName}</if>
+            <!-- or：或 -->
+            <if test="gender == 0 or gender == 1">and gender = #{gender}</if>
+            <if test="email != null and email.trim() != '' ">and email = #{email}</if>
+        </trim>
+    </select>
+
+    <!-- 携带了哪个字段查询条件就带上这个字段的值，练习 choose -->
+    <select id="getEmpsByConditionChoose" resultType="com.yuehai.mybatis.bean.Employee">
+        SELECT * FROM tbl_employee
+        <!--
+            choose (when, otherwise)：分支选择（swtih-case）
+                如果参数带了 id 就用 id 查，带了 lastName 就用 lastName 查
+                只会进入其中一个
+         -->
+        <where>
+            <choose>
+                <!-- 分支选择，when 中的语句只会进入其中一个，从上到下判断进入 -->
+                <when test="id != null">id=#{id}</when>
+                <when test="lastName != null">last_name like #{lastName}</when>
+                <when test="email != null">email=#{email}</when>
+                <!-- 如果 when 都没有执行，则会进入 otherwise 标签；1=1：全部查询 -->
+                <!-- 类似 swtih 语句中的 default 关键字 -->
+                <otherwise>1=1</otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!-- 修改（更新）字段，练习 trim 中的 set 标签 -->
+    <update id="updateEmp">
+        UPDATE tbl_employee
+        <!--
+            1、set 标签可以在 if 判断语句前添加 set，然后将合适的判断语句添加到 sql 语句后
+               并去除掉 if 判断语句后多余的逗号 "," ，但是至少要传入一个参数
+            2、也可以使用 trim 标签，使用 prefix 属性添加 set 前缀，
+               使用 suffixOverrides 属性去掉最后多余的逗号 "," ，也至少要传入一个参数
+         -->
+        <set>
+            <if test="lastName != null">last_name=#{lastName},</if>
+            <if test="gender != null">gender=#{gender},</if>
+            <if test="email != null">email=#{email},</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <!-- 传入 list 集合作为 id，来批量查询数据，练习 foreach -->
+    <select id="getEmpsByConditionForeach" resultType="com.yuehai.mybatis.bean.Employee">
+        <!-- WHERE id in(1,2,4,5)：查询条件是：id 为 1、2、3、4 的数据 -->
+        SELECT * FROM tbl_employee WHERE id in
+        <!--
+            foreach：遍历
+                collection：指定要遍历的集合
+                item：将遍历出的元素赋值给指定的变量，当前遍历的值
+                separator：每个元素之间的分隔符，MyBatis 会自动语句添加上
+                open：前缀，遍历出所有结果后拼接一个开始的字符
+                close：后缀，遍历出所有结果后拼接一个结束的字符
+                index：遍历 list 集合的时候 index 是索引，item 是当前值
+                       遍历 map 集合的时候表示是 map 集合的 key，item 是 map 的值
+
+             #{变量名}：就可以取出变量的值
+         -->
+        <foreach collection="ids" item="item_id" separator="," open="(" close=")">
+            #{item_id}
+        </foreach>
+    </select>
+
+    <!-- 传入 list 集合的 Employee 对象数据，来批量添加数据，练习 foreach -->
+    <insert id="addEmps">
+        <!-- sql 语句中可以使用 VALUES 后跟多组数据来批量添加 -->
+        INSERT INTO tbl_employee(last_name,gender,email,d_id) VALUES
+        <!-- 循环需要添加的多组数据 -->
+        <foreach collection="emps" item="emp" separator=",">
+            (#{emp.lastName},#{emp.gender},#{emp.email},#{emp.dept.id})
+        </foreach>
+    </insert>
+
+    <!--
+        MyBatis 的两个内置参数：
+	 	不只是方法传递过来的参数可以被用来判断、取值，MyBatis 默认还有两个内置参数：
+	 	_parameter：代表整个参数
+	 		单个参数：_parameter 就是这个参数
+	 		多个参数：参数会被封装为一个 map；_parameter 就是代表这个 map
+
+	 	_databaseId：如果配置了 databaseIdProvider 标签。
+	 		_databaseId就是代表当前数据库的别名
+     -->
+    <!-- 查询，练习 MyBatis 的两个内置参数 -->
+    <select id="getEmpsTestInnerParameter" resultType="com.yuehai.mybatis.bean.Employee">
+        <!-- 若当前使用的数据库是 mysql 则执行此 if 标签内的语句 -->
+        <if test="_databaseId == 'mysql' ">
+            select * from tbl_employee
+            <!-- 判断传递过来的整个参数 _parameter 是否为空 -->
+            <if test=" _parameter != null ">
+                <!-- 不为空则执行条件查询 -->
+                where last_name like #{lastName}
+            </if>
+        </if>
+
+        <!-- 若当前使用的数据库是 oracle 则执行此 if 标签内的语句 -->
+        <if test="_databaseId == 'oracle' ">
+            select * from employee
+        </if>
+    </select>
+
+    <select id="getEmpsTestbind" resultType="com.yuehai.mybatis.bean.Employee">
+        <!-- bind：可以将 OGNL 表达式的值绑定到一个变量中，方便后来引用这个变量的值 -->
+        <!-- 将传递过来的 lastName 前后加上 % 后赋值给 _lastName -->
+        <bind name="_lastName" value=" '%' + lastName + '%' "/>
+        <!-- 引用 bind 创建的变量 _lastName -->
+        select * from tbl_employee where last_name like #{_lastName}
+    </select>
+
+    <!--
+        sql 标签能抽取可重用的 sql 片段，方便之后的引用
+        1、sql 抽取，经常将各种要查询的列名，或者插入用的列名抽取出来方便引用
+        2、include 标签用来引用已经抽取的 sql
+        3、include 标签还可以自定义一些 property，sql 标签内部就能使用自定义的属性
+            include 标签内自定义的属性的取值方式：${prop}
+            #{}不可以使用
+     -->
+    <sql id="selectByAlltbl_employee">
+        <!-- 标签内也可以做各种比如 if 判断的语句 -->
+        select * from tbl_employee
+    </sql>
+
+    <!-- 携带了哪个字段查询条件就带上这个字段的值，练习 if -->
+    <select id="getEmpsByConditionIf" resultType="com.yuehai.mybatis.bean.Employee">
+        <!-- 使用 include 标签 引用被 sql 标签抽取出来的 sql 语句 -->
+        <include refid="selectByAlltbl_employee"></include>
+        <where>
+            <if test="id != null">id=#{id}</if>
+            <if test="lastName != null and lastName != '' ">and last_name like #{lastName}</if>
+            <if test="gender == 0 or gender == 1">and gender = #{gender}</if>
+            <if test="email != null and email.trim() != '' ">and email = #{email}</if>
+        </where>
+    </select>
+
+
+</mapper>

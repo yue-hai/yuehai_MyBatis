@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- sql 映射文件 -->
+<!-- namespace：名称空间，指定为 dao 接口的全类名 -->
+<mapper namespace="com.yuehai.mybatis.dao.EmployeeMapper">
+
+    <!--
+        select 标签：查询
+        id：唯一标识，dao 接口中的方法名
+        resultType：返回值类型，各种基本类型去看笔记：typeAliases别名处理器
+            若是对象则写实体类的全类名（若全局配置文件中有配置别名，则可使用别名）
+            如果返回的是一个List、set等集合，要写集合中元素的泛型的类型
+        #{id}：从传递过来的参数中取出属性 id 的值
+        databaseId="mysql"：设置该语句使用什么数据库
+        parameterType：传入的参数，可以省略
+            基本数据类型：int，string，long，Date；获取：#{参数} 获取参数中的值
+            复杂数据类型：类和Map；获取：#{属性名}，map中则是#{key}
+        useGeneratedKeys="true"：使用自增主键获取主键值策略，默认为 falst
+        keyProperty：指定对应的主键属性，也就是 MyBatis 获取到主键值以后，将这个值封装给 JavaBean 的哪个属性
+     -->
+
+    <!-- 添加 -->
+    <insert id="addEmp" parameterType="com.yuehai.mybatis.dao.EmployeeMapper"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tbl_employee(last_name,gender,email) VALUES(#{lastName},#{gender},#{email})
+    </insert>
+
+    <!-- 根据 id 修改（更新） -->
+    <update id="updateEmp" parameterType="com.yuehai.mybatis.dao.EmployeeMapper">
+        UPDATE tbl_employee SET last_name=#{lastName},gender=#{gender},email=#{email} WHERE id=#{id}
+    </update>
+
+    <!-- 根据 id 删除 -->
+    <delete id="deleteEmpById">
+        DELETE FROM tbl_employee WHERE id=#{id}
+    </delete>
+
+    <!-- 根据 id 查询 -->
+    <select id="getEmployeeById" resultType="com.yuehai.mybatis.bean.Employee">
+        select id,last_name,email,gender from tbl_employee where id = #{id}
+    </select>
+
+    <!-- 根据 id 和 姓氏查询 -->
+    <select id="getEmployeeByIdAndLastName" resultType="com.yuehai.mybatis.bean.Employee">
+        select id,last_name,email,gender from tbl_employee where id = #{id} AND last_name = #{lastName}
+    </select>
+
+    <!-- 根据姓氏模糊查询 -->
+    <!-- resultType：如果返回的是一个集合，要写集合中元素的泛型的类型 -->
+    <select id="getEmpsByLastNameLike" resultType="com.yuehai.mybatis.bean.Employee">
+        select id,last_name,email,gender from tbl_employee where last_name LIKE #{lastName}
+    </select>
+
+    <!-- 返回一条记录的 map 集合，key 是列名，值是对应的值 -->
+    <select id="getEmpByIdReturnMap" resultType="map">
+        select id,last_name,email,gender from tbl_employee where id = #{id}
+    </select>
+
+    <!-- 多条记录封装一个 map 集合，键是这条记录的主键，值是记录封装后的 javaBean -->
+    <select id="getEmpsByLastNameLikeReturnMap" resultType="com.yuehai.mybatis.bean.Employee">
+        select id,last_name,email,gender from tbl_employee where last_name LIKE #{lastName}
+    </select>
+
+</mapper>

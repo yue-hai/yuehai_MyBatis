@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- sql 映射文件 -->
+<!-- namespace：名称空间，指定为 dao 接口的全类名 -->
+<mapper namespace="com.yuehai.mybatis.dao.DepartmentMapper">
+
+    <!-- 根据 id 查询部门 -->
+    <select id="getDeptById" resultType="com.yuehai.mybatis.bean.Department">
+        SELECT id,dept_name departmentName FROM tbl_dept WHERE id = #{id}
+    </select>
+
+    <!-- collection：嵌套结果集的方式，定义关联的集合类型的元素的封装规则 -->
+    <resultMap id="dept" type="com.yuehai.mybatis.bean.Department">
+        <!-- 指定主键列的封装规则 -->
+        <id column="did" property="id" />
+        <!-- 定义普通列封装规则 -->
+        <result column="dept_name" property="departmentName" />
+        <!--
+            collection：定义关联集合类型的属性的封装规则
+                property：部门类中定义的员工集合的属性名
+                ofType：指定集合里面元素的类型（员工类的全类名）
+         -->
+        <collection property="emps" ofType="com.yuehai.mybatis.bean.Employee" >
+            <!-- 定义这个集合中元素的封装规则 -->
+            <!-- 指定主键列的封装规则 -->
+            <id column="eid" property="id" />
+            <!-- 定义普通列封装规则 -->
+            <result column="last_name" property="lastName" />
+            <result column="gender" property="gender" />
+            <result column="email" property="email" />
+        </collection>
+    </resultMap>
+
+    <!-- 场景二：查询部门的时候将部门对应的所有员工的信息也查询出来 -->
+    <!-- 根据 id 查询中所有的员工 -->
+    <select id="getDeptByIdPlus" resultMap="dept">
+        SELECT d.id did,d.dept_name dept_name,
+        e.id eid,e.last_name last_name,e.gender gender,e.email email,e.d_id d_id
+        FROM tbl_dept d LEFT JOIN tbl_employee e ON d.id = e.d_id
+        WHERE d.id = #{id}
+    </select>
+
+    <!-- collection：嵌套结果集的方式，定义关联的集合类型的元素的封装规则 -->
+    <resultMap id="deptStep" type="com.yuehai.mybatis.bean.Department">
+        <!-- 指定主键列的封装规则 -->
+        <id column="id" property="id" />
+        <!-- 定义普通列封装规则 -->
+        <result column="dept_name" property="departmentName" />
+        <!--
+            collection：定义关联集合类型的属性的封装规则
+                property：部门类中定义的员工集合的属性名
+                select：表明当前属性是调用 select 指定的方法查出的方法
+                column：指定将哪一列的值传给这个方法
+            扩展：多列的值传递：将多列的值封装到 map 传递
+                column="{key1=column1,key2=column2}"
+                fetchType="lazy"：表示使用延迟加载
+                        lazy：延迟加载
+                        eager：立即加载（部延迟）
+         -->
+        <collection property="emps"
+                select="com.yuehai.mybatis.dao.EmployeeMapperPlus.getEmpsByDeptId"
+                column="{deptId=id}" fetchType="lazy" >
+        </collection>
+    </resultMap>
+
+    <!-- 根据 id 查询部门，分步查询 -->
+    <select id="getDeptByIdStep" resultMap="deptStep">
+        SELECT id,dept_name FROM tbl_dept WHERE id = #{id}
+    </select>
+
+</mapper>

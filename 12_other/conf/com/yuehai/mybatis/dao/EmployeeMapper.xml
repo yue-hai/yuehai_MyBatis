@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- sql 映射文件 -->
+<!-- namespace：名称空间，指定为 dao 接口的全类名 -->
+<mapper namespace="com.yuehai.mybatis.dao.EmployeeMapper">
+
+    <!--
+        select 标签：查询
+        id：唯一标识，dao 接口中的方法名
+        resultType：返回值类型，实体类的全类名（若全局配置文件中有配置别名，则可使用别名）
+        #{id}：从传递过来的参数中取出属性 id 的值
+        databaseId="mysql"：设置该语句使用什么数据库
+     -->
+
+    <!-- 在处理某个字段的时候告诉 MyBatis 用什么类型处理器 -->
+    <resultMap id="typeEmp" type="com.yuehai.mybatis.bean.Employee">
+        <id column="id" property="id" />
+        <result column="last_name" property="lastName" />
+        <result column="email" property="email" />
+        <result column="gender" property="gender" />
+        <!-- 处理某个字段的时候告诉 MyBatis 用什么类型处理器，typeHandler为自定义的类型处理器的全类名 -->
+        <result column="empStatus" property="empStatus"
+            typeHandler="com.yuehai.mybatis.typehandler.MyEnumEmpStatusTypeHandler"/>
+    </resultMap>
+
+    <!-- 根据 id 查询，使用 MySQL 数据库 -->
+    <select id="getEmployeeById" resultMap="typeEmp">
+        select id,last_name,email,gender,empStatus from tbl_employee where id = #{id}
+    </select>
+    
+    <!-- 查询所有员工 -->
+    <select id="getEmps" resultType="com.yuehai.mybatis.bean.Employee">
+        select id,last_name lastName,email,gender from tbl_employee
+    </select>
+
+    <!-- 添加员工 -->
+    <insert id="addEmp" useGeneratedKeys="true" keyProperty="id">
+        insert into tbl_employee(last_name,gender,email,empStatus)
+        values(#{lastName},#{gender},#{email},
+        <!-- 处理某个字段的时候告诉 MyBatis 用什么类型处理器，typeHandler为自定义的类型处理器的全类名 -->
+        #{empStatus.typeHandler=com.yuehai.mybatis.typehandler.MyEnumEmpStatusTypeHandler})
+    </insert>
+
+
+</mapper>

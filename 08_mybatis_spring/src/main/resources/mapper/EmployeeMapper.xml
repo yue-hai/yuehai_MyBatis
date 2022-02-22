@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- sql 映射文件 -->
+<!-- namespace：名称空间，指定为 dao 接口的全类名 -->
+<mapper namespace="com.yuehai.sm.dao.EmployeeMapper">
+    <!-- 开启二级缓存 -->
+    <cache />
+
+    <!-- sql 标签能抽取可重用的 sql 片段，方便之后的引用 -->
+    <sql id="selectAll">
+        <!-- 标签内也可以做各种比如 if 判断的语句 -->
+        select * from tbl_employee
+    </sql>
+
+    <!-- 查询所有员工 -->
+    <select id="getEmps" resultType="com.yuehai.sm.bean.Employee">
+        <!-- 使用 include 标签 引用被 sql 标签抽取出来的 sql 语句 -->
+        <include refid="selectAll" />
+    </select>
+
+    <!-- 添加员工 -->
+    <insert id="addEmp" useGeneratedKeys="true" keyProperty="id">
+        insert into tbl_employee(last_name,email,gender)
+        values(#{lastName},#{email},#{gender})
+    </insert>
+
+</mapper>

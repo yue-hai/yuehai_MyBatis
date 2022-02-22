@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- sql 映射文件 -->
+<!-- namespace：名称空间，指定为 dao 接口的全类名 -->
+<mapper namespace="com.yuehai.mybatis.dao.EmployeeMapper">
+
+    <!-- MyBatis 整合第三方缓存 ehcache  -->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+
+    <!--
+        sql 标签能抽取可重用的 sql 片段，方便之后的引用
+        1、sql 抽取，经常将各种要查询的列名，或者插入用的列名抽取出来方便引用
+        2、include 标签用来引用已经抽取的 sql
+        3、include 标签还可以自定义一些 property，sql 标签内部就能使用自定义的属性
+            include 标签内自定义的属性的取值方式：${prop}
+            #{}不可以使用
+     -->
+    <sql id="selectByAlltbl_employee">
+        <!-- 标签内也可以做各种比如 if 判断的语句 -->
+        select * from tbl_employee
+    </sql>
+
+    <!-- 携带了哪个字段查询条件就带上这个字段的值，练习 if -->
+    <select id="getEmpsByConditionIf" resultType="com.yuehai.mybatis.bean.Employee">
+        <!-- 使用 include 标签 引用被 sql 标签抽取出来的 sql 语句 -->
+        <include refid="selectByAlltbl_employee"></include>
+        <where>
+            <if test="id != null">id=#{id}</if>
+            <if test="lastName != null and lastName != '' ">and last_name like #{lastName}</if>
+            <if test="gender == 0 or gender == 1">and gender = #{gender}</if>
+            <if test="email != null and email.trim() != '' ">and email = #{email}</if>
+        </where>
+    </select>
+
+    <!-- 根据 id 查询 -->
+    <select id="getEmpById" resultType="com.yuehai.mybatis.bean.Employee">
+        <!-- 使用 include 标签 引用被 sql 标签抽取出来的 sql 语句 -->
+        <include refid="selectByAlltbl_employee" />
+        where id = #{id}
+    </select>
+
+</mapper>

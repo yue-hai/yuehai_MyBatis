@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- 全局配置文件 -->
+
+<configuration>
+
+    <!-- 一、MyBatis 可以使用 properties 标签来引入外部 properties 配置文件的内容 -->
+
+    <!--
+        二、settings 是 MyBatis 中极为重要的调整设置，它们会改变 MyBatis 的运行时行为
+        settings：用来设置每一个设置项
+        1、name：设置项的名称
+        2、value：设置项的值
+        显式的指定每个我们需要更改的配置的值，即使他是默认的，防止版本更新带来的问题
+     -->
+    <settings>
+        <!-- 开启自动驼峰命名规则映射 -->
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        <!-- 开启延迟加载 -->
+        <setting name="lazyLoadingEnabled" value="true" />
+        <!-- 开启属性按需加载 -->
+        <setting name="aggressiveLazyLoading" value="false" />
+        <!-- 显式的开启二级缓存，默认开启 -->
+        <setting name="cacheEnabled" value="true" />
+    </settings>
+
+    <!-- 三、typeAliases：别名处理器，可以为我们的 Java 类型起别名，别名不区分大小写 -->
+
+    <!-- 四、environments：环境们，MyBatis 可以配置多种环境 -->
+
+    <!-- 五、databaseIdProvider，为不同的数据库厂商起别名 -->
+    <databaseIdProvider type="DB_VENDOR">
+        <!-- 为不同的数据库厂商起别名 -->
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle"/>
+        <property name="SQL Server" value="sqlServer"/>
+    </databaseIdProvider>
+
+    <!-- 六、mapper 映射：将我们写好的 sql 映射文件注册到全局配置文件中 -->
+
+</configuration>

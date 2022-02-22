@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- sql 映射文件 -->
+<!-- namespace：名称空间 -->
+<mapper namespace="com.yuehai.mybatis.bean.Employee">
+    <!--
+        select 标签：查询
+        id：唯一标识
+        resultType：返回值类型，各种基本类型去看笔记：typeAliases别名处理器
+            若是对象则写实体类的全类名（若全局配置文件中有配置别名，则可使用别名）
+            如果返回的是一个集合，要写集合中元素的泛型的类型
+        #{id}：从传递过来的参数中取出属性 id 的值
+    -->
+    <select id="selectEmp" resultType="com.yuehai.mybatis.bean.Employee">
+        -- 注意起别名
+        select id,last_name lastName,email,gender from tbl_employee where id = #{id}
+    </select>
+</mapper>
